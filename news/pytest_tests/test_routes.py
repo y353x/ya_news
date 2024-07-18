@@ -1,8 +1,16 @@
-from http import HTTPStatus
+# Главная страница доступна анонимному пользователю.
+# Страница отдельной новости доступна анонимному пользователю.
+# Страницы регистрации пользователей, входа в учётную запись и выхода из неё
+#        доступны анонимным пользователям.
+# Страницы удаления и редактирования комментария доступны автору комментария.
+# При попытке перейти на страницу редактирования или удаления комментария
+#        анонимный пользователь перенаправляется на страницу авторизации.
+# Авторизованный пользователь не может зайти на страницы редактирования или
+#        удаления чужих комментариев (возвращается ошибка 404).
 import pytest
 from django.urls import reverse
+from http import HTTPStatus
 from pytest_django.asserts import assertRedirects
-
 
 pytestmark = pytest.mark.django_db
 
@@ -18,6 +26,7 @@ pytestmark = pytest.mark.django_db
     ),
 )
 def test_pages_availability(client, name, args):
+    """Страницы доступна анонимному пользователю."""
     url = reverse(name, args=args)
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
@@ -40,6 +49,10 @@ def test_pages_availability(client, name, args):
 def test_availability_for_comment_edit_and_delete(
     name, args, parametrized_client, expected_status
 ):
+    """
+    Страницы удаления и редактирования комментария
+    доступны автору комментария.
+    """
     url = reverse(name, args=args)
     response = parametrized_client.get(url)
     assert response.status_code == expected_status
@@ -53,6 +66,10 @@ def test_availability_for_comment_edit_and_delete(
     ),
 )
 def test_redirect_for_anonymous_client(client, name, args):
+    """
+    Авторизованный пользователь не может зайти на страницы
+    редактирования или удаления чужих комментариев.
+    """
     login_url = reverse('users:login')
     # Теперь не надо писать никаких if и можно обойтись одним выражением.
     url = reverse(name, args=args)

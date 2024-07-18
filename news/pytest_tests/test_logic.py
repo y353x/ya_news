@@ -1,4 +1,3 @@
-# В файле test_logic.py:
 # Анонимный пользователь не может отправить комментарий.
 # Авторизованный пользователь может отправить комментарий.
 # Если комментарий содержит запрещённые слова, он не будет опубликован,
@@ -8,11 +7,11 @@
 # чужие комментарии.
 import pytest
 from django.urls import reverse
+from http import HTTPStatus
+from pytest_django.asserts import assertRedirects, assertFormError
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
-from pytest_django.asserts import assertRedirects, assertFormError
 from .conftest import COMMENT_TEXT, NEW_COMMENT_TEXT
-from http import HTTPStatus
 
 pytestmark = pytest.mark.django_db
 

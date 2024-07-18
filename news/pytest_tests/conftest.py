@@ -82,7 +82,6 @@ def news_on_page():
 
 @pytest.fixture
 def comments(news, not_author):
-    # detail_url = reverse('news:detail', args=(news.id,))
     now = timezone.now()
     for index in range(10):
         comment = Comment.objects.create(

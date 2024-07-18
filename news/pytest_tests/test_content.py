@@ -1,13 +1,20 @@
+# Количество новостей на главной странице — не более 10.
+# Новости отсортированы от самой свежей к самой старой.
+#      Свежие новости в начале списка.
+# Комментарии на странице отдельной новости отсортированы
+#      в хронологическом порядке: старые в начале списка, новые — в конце.
+# Анонимному пользователю недоступна форма для отправки комментария
+#      на странице отдельной новости, а авторизованному доступна.
 import pytest
 from django.conf import settings
 from django.urls import reverse
 from news.forms import CommentForm
 
-
 pytestmark = pytest.mark.django_db
 
 
 def test_news_count(news_on_page, client):
+    """Количество новостей на главной странице — не более 10."""
     # news_on_page для создания 10 новостей.
     HOME_URL = reverse('news:home')
     response = client.get(HOME_URL)
@@ -17,6 +24,7 @@ def test_news_count(news_on_page, client):
 
 
 def test_news_order(news_on_page, client):
+    """Новости отсортированы от самой свежей к самой старой."""
     HOME_URL = reverse('news:home')
     response = client.get(HOME_URL)
     object_list = response.context['object_list']
@@ -44,6 +52,10 @@ def test_news_order(news_on_page, client):
 
 
 def test_comments_order(comment, client, news):
+    """
+    Комментарии на странице отдельной новости отсортированы
+    в хронологическом порядке: старые в начале списка, новые — в конце.
+    """
     detail_url = reverse('news:detail', args=(news.id,))
     response = client.get(detail_url)
     assert 'news' in response.context
@@ -66,6 +78,10 @@ def test_comments_order(comment, client, news):
     ),
 )
 def test_availability_form(parametrized_client, expected_status, news):
+    """
+    Анонимному пользователю недоступна форма для отправки комментария
+    на странице отдельной новости, а авторизованному доступна.
+    """
     detail_url = reverse('news:detail', args=(news.id,))
     response = parametrized_client.get(detail_url)
     assert ('form' in response.context) is expected_status
