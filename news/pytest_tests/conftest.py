@@ -6,6 +6,9 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils import timezone
 
+COMMENT_TEXT = 'Текст комментария'
+NEW_COMMENT_TEXT = 'Обновлённый комментарий'
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -88,3 +91,13 @@ def comments(news, not_author):
         comment.created = now + timedelta(days=index)
         comment.save()
     return comment
+
+
+@pytest.fixture
+def form_data():
+    return {'text': COMMENT_TEXT}
+
+
+@pytest.fixture
+def another_form_data():
+    return {'text': NEW_COMMENT_TEXT}
