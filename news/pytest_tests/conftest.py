@@ -121,3 +121,8 @@ CLIENTS_STATUS = (
     (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
     (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
 )
+
+CLIENT_FORM_AVAIL = (
+    (pytest.lazy_fixture('client'), False),
+    (pytest.lazy_fixture('author_client'), True)
+)

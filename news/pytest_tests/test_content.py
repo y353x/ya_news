@@ -9,6 +9,7 @@ import pytest
 from django.conf import settings
 from django.urls import reverse
 from news.forms import CommentForm
+from .conftest import CLIENT_FORM_AVAIL
 
 pytestmark = pytest.mark.django_db
 
@@ -54,14 +55,8 @@ def test_comments_order(comments, client, news):
 
 
 @pytest.mark.parametrize(
-    'parametrized_client, expected_status',
-    (
-        (pytest.lazy_fixture('client'), False),
-        (pytest.lazy_fixture('author_client'), True)
-    ),
-)
-def test_availability_form(parametrized_client,
-                           expected_status, news):
+    'parametrized_client, expected_status', (CLIENT_FORM_AVAIL))
+def test_availability_form(parametrized_client, expected_status, news):
     """
     Анонимному пользователю недоступна форма для отправки комментария
     на странице отдельной новости, а авторизованному доступна.
