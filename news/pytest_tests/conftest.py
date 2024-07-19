@@ -1,10 +1,11 @@
 # conftest.py
 import pytest
-from django.test.client import Client
-from news.models import News, Comment
-from django.conf import settings
 from datetime import datetime, timedelta
+from django.test.client import Client
+from django.conf import settings
 from django.utils import timezone
+from http import HTTPStatus
+from news.models import News, Comment
 
 COMMENT_TEXT = 'Текст комментария'
 NEW_COMMENT_TEXT = 'Обновлённый комментарий'
@@ -99,3 +100,24 @@ def form_data():
 def another_form_data():
     """Дата (другой текст комментария) для передачи в форму."""
     return {'text': NEW_COMMENT_TEXT}
+
+
+ANONIM_AVAIL_URLS = (
+    ('news:home', None),
+    ('news:detail', pytest.lazy_fixture('news')),
+    ('users:login', None),
+    ('users:logout', None),
+    ('users:signup', None),
+)
+EDIT_COMMENT_URLS = (
+    ('news:edit', pytest.lazy_fixture('comment')),
+    ('news:delete', pytest.lazy_fixture('comment'))
+)
+EDIT_NEWS_URLS = (
+    ('news:edit', pytest.lazy_fixture('news')),
+    ('news:delete', pytest.lazy_fixture('news'))
+)
+CLIENTS_STATUS = (
+    (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
+    (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
+)

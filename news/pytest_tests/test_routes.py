@@ -11,20 +11,13 @@ import pytest
 from django.urls import reverse
 from http import HTTPStatus
 from pytest_django.asserts import assertRedirects
+from .conftest import (ANONIM_AVAIL_URLS, CLIENTS_STATUS,
+                       EDIT_COMMENT_URLS, EDIT_NEWS_URLS)
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.parametrize(
-    'name, args',
-    (
-        ('news:home', None),
-        ('news:detail', pytest.lazy_fixture('news')),
-        ('users:login', None),
-        ('users:logout', None),
-        ('users:signup', None),
-    ),
-)
+@pytest.mark.parametrize('name, args', (ANONIM_AVAIL_URLS))
 def test_pages_availability(client, name, args):
     """Страницы доступны анонимному пользователю."""
     args = (args.id,) if args else None
@@ -34,22 +27,10 @@ def test_pages_availability(client, name, args):
 
 
 @pytest.mark.parametrize(
-    'parametrized_client, expected_status',
-    (
-        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
-        (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
-    ),
-)
-@pytest.mark.parametrize(
-    'name, args',
-    (
-        ('news:edit', pytest.lazy_fixture('comment')),
-        ('news:delete', pytest.lazy_fixture('comment')),
-    ),
-)
+    'parametrized_client, expected_status', (CLIENTS_STATUS))
+@pytest.mark.parametrize('name, args', (EDIT_COMMENT_URLS))
 def test_availability_for_comment_edit_and_delete(
-    name, args, parametrized_client, expected_status
-):
+        name, args, parametrized_client, expected_status):
     """
     Страницы удаления и редактирования комментария
     доступны автору комментария,
@@ -60,13 +41,7 @@ def test_availability_for_comment_edit_and_delete(
     assert response.status_code == expected_status
 
 
-@pytest.mark.parametrize(
-    'name, args',
-    (
-        ('news:edit', pytest.lazy_fixture('news')),
-        ('news:delete', pytest.lazy_fixture('news')),
-    ),
-)
+@pytest.mark.parametrize('name, args', (EDIT_NEWS_URLS))
 def test_redirect_for_anonymous_client(client, name, args):
     """
     При попытке перейти на страницу редактирования или удаления комментария
