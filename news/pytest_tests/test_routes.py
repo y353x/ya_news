@@ -26,7 +26,7 @@ pytestmark = pytest.mark.django_db
     ),
 )
 def test_pages_availability(client, name, args):
-    """Страницы доступна анонимному пользователю."""
+    """Страницы доступны анонимному пользователю."""
     url = reverse(name, args=args)
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
@@ -51,7 +51,8 @@ def test_availability_for_comment_edit_and_delete(
 ):
     """
     Страницы удаления и редактирования комментария
-    доступны автору комментария.
+    доступны автору комментария,
+    недоступны другим пользователям.
     """
     url = reverse(name, args=args)
     response = parametrized_client.get(url)
@@ -67,11 +68,10 @@ def test_availability_for_comment_edit_and_delete(
 )
 def test_redirect_for_anonymous_client(client, name, args):
     """
-    Авторизованный пользователь не может зайти на страницы
-    редактирования или удаления чужих комментариев.
+    При попытке перейти на страницу редактирования или удаления комментария
+    анонимный пользователь перенаправляется на страницу авторизации.
     """
     login_url = reverse('users:login')
-    # Теперь не надо писать никаких if и можно обойтись одним выражением.
     url = reverse(name, args=args)
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)

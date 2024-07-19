@@ -33,29 +33,12 @@ def test_news_order(news_on_page, client):
     assert all_dates == sorted_dates
 
 
-# Или объединить 2 теста, но не будет независимости
-
-# def test_news_count_and_order(news_on_page, client):
-#     # news_on_page для создания 10 новостей.
-#     HOME_URL = reverse('news:home')
-#     response = client.get(HOME_URL)
-#     object_list = response.context['object_list']
-#     news_count = object_list.count()
-#     # assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
-#     all_dates = [news.date for news in object_list]
-#     sorted_dates = sorted(all_dates, reverse=True)
-#     # assert all_dates == sorted_dates
-#     pairs = ((news_count, settings.NEWS_COUNT_ON_HOME_PAGE),
-#              (all_dates, sorted_dates))
-#     for arg_1, arg_2 in pairs:
-#         assert arg_1 == arg_2
-
-
-def test_comments_order(comment, client, news):
+def test_comments_order(comments, client, news):
     """
     Комментарии на странице отдельной новости отсортированы
     в хронологическом порядке: старые в начале списка, новые — в конце.
     """
+    # В фикстуре comments 10 комментариев с разными датами.
     detail_url = reverse('news:detail', args=(news.id,))
     response = client.get(detail_url)
     assert 'news' in response.context
@@ -77,13 +60,17 @@ def test_comments_order(comment, client, news):
         (pytest.lazy_fixture('author_client'), True)
     ),
 )
-def test_availability_form(parametrized_client, expected_status, news):
+def test_availability_form(parametrized_client,
+                           expected_status, news_id_for_args):
     """
     Анонимному пользователю недоступна форма для отправки комментария
     на странице отдельной новости, а авторизованному доступна.
     """
-    detail_url = reverse('news:detail', args=(news.id,))
+    detail_url = reverse('news:detail', args=news_id_for_args)
     response = parametrized_client.get(detail_url)
+    # Проверяем, что форма есть в ответе, сравниваем с expected_status.
     assert ('form' in response.context) is expected_status
+    # Для author_client c expected_status==True
+    # проверяем соответствие формы ожидаемой форме.
     if expected_status:
         assert isinstance(response.context['form'], CommentForm)

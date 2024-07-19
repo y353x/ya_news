@@ -16,19 +16,21 @@ from .conftest import COMMENT_TEXT, NEW_COMMENT_TEXT
 pytestmark = pytest.mark.django_db
 
 
-def test_anonymous_user_cant_create_comment(client, news, form_data):
+def test_anonymous_user_cant_create_comment(
+        client, news_id_for_args, form_data
+):
     """Анонимный пользователь не может отправить комментарий."""
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=news_id_for_args)
     client.post(url, data=form_data)
     comments_count = Comment.objects.count()
     assert comments_count == 0
 
 
 def test_user_can_create_comment(
-    not_author_client, not_author, news, form_data
+    not_author_client, not_author, news, news_id_for_args, form_data
 ):
     """Авторизованный пользователь может отправить комментарий."""
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=news_id_for_args)
     response = not_author_client.post(url, data=form_data)
     assertRedirects(response, f'{url}#comments')
     comments_count = Comment.objects.count()
@@ -70,8 +72,7 @@ def test_author_can_delete_comment(comment_id_for_args,
 
 
 def test_user_cant_delete_comment_of_another_user(comment_id_for_args,
-                                                  not_author_client,
-                                                  news_id_for_args):
+                                                  not_author_client):
     """Авторизованный пользователь не может удалять
     чужие комментарии.
     """
