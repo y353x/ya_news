@@ -61,12 +61,12 @@ def test_comments_order(comments, client, news):
     ),
 )
 def test_availability_form(parametrized_client,
-                           expected_status, news_id_for_args):
+                           expected_status, news):
     """
     Анонимному пользователю недоступна форма для отправки комментария
     на странице отдельной новости, а авторизованному доступна.
     """
-    detail_url = reverse('news:detail', args=news_id_for_args)
+    detail_url = reverse('news:detail', args=(news.id,))
     response = parametrized_client.get(detail_url)
     # Проверяем, что форма есть в ответе, сравниваем с expected_status.
     assert ('form' in response.context) is expected_status

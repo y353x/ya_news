@@ -49,12 +49,6 @@ def news():
 
 
 @pytest.fixture
-def news_id_for_args(news):
-    """Id новости для args."""
-    return (news.id,)
-
-
-@pytest.fixture
 def comment(news, author):
     """Объект комментарий от автора."""
     comment = Comment.objects.create(
@@ -63,12 +57,6 @@ def comment(news, author):
         text='Текст комментария'
     )
     return comment
-
-
-@pytest.fixture
-def comment_id_for_args(comment):
-    """Id комментария для args."""
-    return (comment.id,)
 
 
 @pytest.fixture
@@ -86,7 +74,6 @@ def news_on_page():
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
     ]
     News.objects.bulk_create(all_news)
-    return all_news
 
 
 @pytest.fixture
