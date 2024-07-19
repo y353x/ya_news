@@ -12,16 +12,19 @@ NEW_COMMENT_TEXT = 'Обновлённый комментарий'
 
 @pytest.fixture
 def author(django_user_model):
+    """Пользователь - автор."""
     return django_user_model.objects.create(username='Автор')
 
 
 @pytest.fixture
 def not_author(django_user_model):
+    """Пользователь - не автор."""
     return django_user_model.objects.create(username='Не автор')
 
 
 @pytest.fixture
 def author_client(author):
+    """Пользователь - автор - клиент."""
     client = Client()
     client.force_login(author)
     return client
@@ -29,6 +32,7 @@ def author_client(author):
 
 @pytest.fixture
 def not_author_client(not_author):
+    """Пользователь - не автор - клиент."""
     client = Client()
     client.force_login(not_author)
     return client
@@ -36,6 +40,7 @@ def not_author_client(not_author):
 
 @pytest.fixture
 def news():
+    """Объект новость."""
     news = News.objects.create(
         title='Заголовок',
         text='Текст заметки',
@@ -45,11 +50,13 @@ def news():
 
 @pytest.fixture
 def news_id_for_args(news):
+    """Id новости для args."""
     return (news.id,)
 
 
 @pytest.fixture
 def comment(news, author):
+    """Объект комментарий от автора."""
     comment = Comment.objects.create(
         news=news,
         author=author,
@@ -60,11 +67,13 @@ def comment(news, author):
 
 @pytest.fixture
 def comment_id_for_args(comment):
+    """Id комментария для args."""
     return (comment.id,)
 
 
 @pytest.fixture
 def news_on_page():
+    """11 объектов новостей с разными датами."""
     today = datetime.today()
     all_news = [
         News(
@@ -82,6 +91,7 @@ def news_on_page():
 
 @pytest.fixture
 def comments(news, not_author):
+    """10 объектов комментариев с разными датами."""
     now = timezone.now()
     for index in range(10):
         comment = Comment.objects.create(
@@ -94,9 +104,11 @@ def comments(news, not_author):
 
 @pytest.fixture
 def form_data():
+    """Дата (текст комментария) для передачи в форму."""
     return {'text': COMMENT_TEXT}
 
 
 @pytest.fixture
 def another_form_data():
+    """Дата (другой текст комментария) для передачи в форму."""
     return {'text': NEW_COMMENT_TEXT}
